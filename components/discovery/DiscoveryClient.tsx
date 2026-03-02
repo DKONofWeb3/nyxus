@@ -24,7 +24,15 @@ interface Match {
   score: number;
   reasoning: string;
   category_match: boolean;
-  discovered_projects: DiscoveredProject;
+  discovered_projects: DiscoveredProject | DiscoveredProject[];
+}
+
+// Supabase joins always return arrays even for one-to-one relations
+function getDP(match: Match): DiscoveredProject | null {
+  if (!match.discovered_projects) return null;
+  return Array.isArray(match.discovered_projects)
+    ? match.discovered_projects[0] ?? null
+    : match.discovered_projects;
 }
 
 interface Props {
@@ -67,7 +75,8 @@ function formatNumber(n: number | null): string {
 
 // ── Project detail panel ───────────────────────────────────────
 function DetailPanel({ match, onClose }: { match: Match; onClose: () => void }) {
-  const dp = match.discovered_projects;
+  const dp = getDP(match);
+      if (!dp) return null;
   const gradient = GRADIENTS[dp.category ?? ""] ?? "from-gray-500 to-gray-600";
   const initials = dp.name.slice(0, 2).toUpperCase();
 
@@ -219,14 +228,14 @@ export function DiscoveryClient({ matches, projectName }: Props) {
       const q = search.toLowerCase();
       result = result.filter(
         (m) =>
-          m.discovered_projects.name.toLowerCase().includes(q) ||
-          m.discovered_projects.narrative?.toLowerCase().includes(q) ||
-          m.discovered_projects.category?.toLowerCase().includes(q)
+          getDP(m)?.name.toLowerCase().includes(q) ||
+          getDP(m)?.narrative?.toLowerCase().includes(q) ||
+          getDP(m)?.category?.toLowerCase().includes(q)
       );
     }
 
     if (category !== "All") {
-      result = result.filter((m) => m.discovered_projects.category === category);
+      result = result.filter((m) => getDP(m)?.category === category);
     }
 
     if (minScore > 0) {
@@ -235,8 +244,8 @@ export function DiscoveryClient({ matches, projectName }: Props) {
 
     if (sortBy === "recent") {
       result.sort((a, b) => {
-        const da = new Date(a.discovered_projects.last_active ?? 0).getTime();
-        const db = new Date(b.discovered_projects.last_active ?? 0).getTime();
+        const da = new Date(getDP(a)?.last_active ?? 0).getTime();
+        const db = new Date(getDP(b)?.last_active ?? 0).getTime();
         return db - da;
       });
     } else {
@@ -328,7 +337,8 @@ export function DiscoveryClient({ matches, projectName }: Props) {
       ) : (
         <div className="grid grid-cols-2 gap-3">
           {filtered.map((match) => {
-            const dp = match.discovered_projects;
+            const dp = getDP(match);
+      if (!dp) return null;
             const gradient = GRADIENTS[dp.category ?? ""] ?? "from-gray-500 to-gray-600";
             const initials = dp.name.slice(0, 2).toUpperCase();
             const isLow = match.score < 35;
