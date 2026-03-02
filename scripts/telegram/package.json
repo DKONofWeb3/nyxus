@@ -1,0 +1,18 @@
+{
+  "name": "nyxus-telegram-scraper",
+  "version": "1.0.0",
+  "description": "Telegram scraper for NYXUS — pulls web3 project data from groups/channels",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "auth": "node --experimental-vm-modules scraper.js --auth",
+    "scrape": "node --experimental-vm-modules scraper.js --scrape",
+    "scrape:dry": "node --experimental-vm-modules scraper.js --scrape --dry-run"
+  },
+  "dependencies": {
+    "telegram": "^2.26.22",
+    "@supabase/supabase-js": "^2.45.4",
+    "input": "^1.0.1",
+    "dotenv": "^16.4.5"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "nyxus-apify-scraper",
+  "version": "1.0.0",
+  "description": "Apify X/Twitter scraper for NYXUS — pulls web3 project data from Twitter profiles and searches",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "scrape": "node scraper.js --scrape",
+    "scrape:dry": "node scraper.js --scrape --dry-run"
+  },
+  "dependencies": {
+    "apify-client": "^2.9.4",
+    "@supabase/supabase-js": "^2.45.4",
+    "dotenv": "^16.4.5"
+  }
+}

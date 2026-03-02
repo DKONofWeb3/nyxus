@@ -1,0 +1,162 @@
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Nyxus Design Tokens — Light ── */
+:root {
+  --bg: #f7f6f2;
+  --bg2: #eeecea;
+  --surface: #ffffff;
+  --border: #e0ddd8;
+  --text: #1a1916;
+  --text2: #6b6860;
+  --text3: #a8a59f;
+  --accent: #ff5c1a;
+  --green: #1db954;
+  --yellow: #f5c842;
+  --blue: #3b82f6;
+  --red: #ef4444;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Nyxus Design Tokens — Dark ── */
+[data-theme="dark"] {
+  --bg: #111110;
+  --bg2: #1c1b19;
+  --surface: #222120;
+  --border: #333230;
+  --text: #f2ede8;
+  --text2: #a09b95;
+  --text3: #605c58;
+  --accent: #ff5c1a;
+  --green: #1db954;
+  --yellow: #f5c842;
+  --blue: #3b82f6;
+  --red: #ef4444;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Base Resets ── */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+  line-height: 1.6;
+}
+
+/* ── Utility Classes ── */
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply bg-accent text-white font-medium text-sm px-4 py-2 rounded-lg 
+           transition-all duration-150 hover:opacity-90 hover:-translate-y-px 
+           active:translate-y-0 cursor-pointer border-0;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-text-2 font-medium text-sm px-4 py-2 rounded-lg 
+           border border-border transition-all duration-150 
+           hover:bg-bg-2 hover:text-text cursor-pointer;
+  }
+
+  .btn-dark {
+    @apply bg-text text-bg font-medium text-sm px-4 py-2 rounded-lg 
+           transition-all duration-150 hover:opacity-90 cursor-pointer border-0;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-surface border border-border rounded-xl shadow-card;
+  }
+
+  /* Input */
+  .input-base {
+    @apply w-full px-3.5 py-2.5 rounded-lg border border-border bg-surface 
+           text-sm text-text font-sans outline-none transition-colors duration-150
+           placeholder:text-text-3
+           focus:border-accent;
+    /* ring uses rgba directly since CSS var opacity modifiers don't work in @apply */
+    --tw-ring-shadow: 0 0 0 3px rgba(255, 92, 26, 0.12);
+  }
+  .input-base:focus {
+    box-shadow: var(--tw-ring-shadow);
+  }
+
+  /* Label */
+  .input-label {
+    @apply text-[11px] font-semibold text-text-2 uppercase tracking-wider mb-1.5 block;
+  }
+
+  /* Tag pill */
+  .tag {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold 
+           border border-border bg-surface text-text-2 cursor-pointer 
+           transition-all duration-100 select-none;
+  }
+
+  .tag.selected {
+    @apply bg-accent border-accent text-white;
+  }
+
+  /* Section label (mono uppercase) */
+  .section-label-mono {
+    @apply font-mono text-[11px] font-medium text-accent tracking-[0.15em] uppercase;
+  }
+
+  /* Badge — no opacity modifiers (incompatible with CSS var colors in @apply) */
+  .badge-green {
+    @apply inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded text-brand-green;
+    background-color: rgba(29, 185, 84, 0.12);
+  }
+  .badge-red {
+    @apply inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded text-brand-red;
+    background-color: rgba(239, 68, 68, 0.12);
+  }
+  .badge-yellow {
+    @apply inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded;
+    background-color: rgba(245, 200, 66, 0.15);
+    color: #92710a;
+  }
+  .badge-blue {
+    @apply inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded text-brand-blue;
+    background-color: rgba(59, 130, 246, 0.12);
+  }
+
+  /* Sidebar item */
+  .sidebar-item {
+    @apply flex items-center gap-2 px-2 py-1.5 rounded-md text-xs font-medium 
+           text-text-2 cursor-pointer transition-all duration-100 mb-px
+           hover:bg-surface hover:text-text;
+  }
+  .sidebar-item.active {
+    @apply bg-surface text-text font-semibold;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 100px;
+  }
+}
