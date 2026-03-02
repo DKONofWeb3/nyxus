@@ -143,7 +143,9 @@ export default async function DashboardPage() {
         ) : (
           <div className="flex flex-col gap-2 mb-6">
             {matches!.map((match, i) => {
-              const dp = match.discovered_projects as {
+              const dp = (Array.isArray(match.discovered_projects)
+                ? match.discovered_projects[0]
+                : match.discovered_projects) as {
                 id: string; name: string; category: string | null;
                 twitter_followers: number | null; telegram_members: number | null;
               };
