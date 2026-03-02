@@ -1,5 +1,7 @@
 "use client";
 
+import type React from "react";
+
 import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
 import {
@@ -12,7 +14,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-const navItems = [
+interface NavItem {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  teaser?: boolean;
+}
+
+const navItems: { section: string; items: NavItem[] }[] = [
   {
     section: "Intelligence",
     items: [
