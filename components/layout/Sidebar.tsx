@@ -81,14 +81,15 @@ export function Sidebar({ projects = [], activeProjectId, alertCount = 0 }: Side
     setSwitching(true);
     setOpen(false);
 
-    // Store the active project in user metadata so it persists across sessions
+    // Store active project in user metadata then hard-navigate so server
+    // components re-run with the new active_project_id
     const supabase = createClient();
     await supabase.auth.updateUser({
       data: { active_project_id: projectId }
     });
 
-    router.refresh();
-    setSwitching(false);
+    // Hard navigation ensures layout + dashboard re-fetch with new project
+    window.location.href = "/dashboard";
   };
 
   return (

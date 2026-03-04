@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Topbar } from "@/components/layout/Topbar";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -8,18 +10,19 @@ export default async function DiscoveryPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
-  // Get user's active project
+  // Fetch all projects
   const { data: projects } = await supabase
     .from("projects")
     .select("id, name")
     .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(1);
+    .order("created_at", { ascending: false });
 
-  const project = projects?.[0];
+  // Use the same active project logic as dashboard + partnerships
+  const activeId = user.user_metadata?.active_project_id as string | undefined;
+  const project = (activeId ? projects?.find((p) => p.id === activeId) : null) ?? projects?.[0] ?? null;
+
   if (!project) redirect("/onboarding");
 
-  // Get all matches with discovered project data, sorted by score
   const { data: matches } = await supabase
     .from("matches")
     .select(`
@@ -41,7 +44,7 @@ export default async function DiscoveryPage() {
           {matches?.length ?? 0} projects matched
         </span>
       </Topbar>
-      <DiscoveryClient matches={matches ?? []} projectName={project.name} />
+      <DiscoveryClient matches={matches ?? []} projectName={project.name} projectId={project.id} />
     </>
   );
 }

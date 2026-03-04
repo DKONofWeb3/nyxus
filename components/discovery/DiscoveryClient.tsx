@@ -1,8 +1,9 @@
 "use client";
 
 import { MatchScoreBadge } from "@/components/ui/Badge";
-import { Search, X, ExternalLink, Twitter, MessageCircle, Users, Calendar, Zap } from "lucide-react";
+import { Search, X, ExternalLink, Twitter, MessageCircle, Users, Calendar, Zap, Check, Loader2 } from "lucide-react";
 import { useState, useMemo } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 // ── Types ──────────────────────────────────────────────────────
 interface DiscoveredProject {
@@ -38,6 +39,7 @@ function getDP(match: Match): DiscoveredProject | null {
 interface Props {
   matches: Match[];
   projectName: string;
+  projectId: string;
 }
 
 // ── Category gradient map ──────────────────────────────────────
@@ -74,7 +76,42 @@ function formatNumber(n: number | null): string {
 }
 
 // ── Project detail panel ───────────────────────────────────────
-function DetailPanel({ match, onClose }: { match: Match; onClose: () => void }) {
+function DetailPanel({ match, onClose, projectId }: { match: Match; onClose: () => void; projectId: string }) {
+  const [saving, setSaving] = useState<"idle" | "saving" | "saved" | "error">("idle");
+
+  const handleSave = async () => {
+    if (saving !== "idle") return;
+    setSaving("saving");
+    const dp = getDP(match);
+    if (!dp) return;
+    const supabase = createClient();
+    const payload = {
+      project_id: projectId,
+      discovered_project_id: dp.id,
+      name: dp.name,
+      category: dp.category,
+      status: "Identified",
+      notes: match.reasoning,
+      match_score: match.score,
+    };
+    console.log("[NYXUS] Saving partnership:", payload);
+
+    const { data: saved, error } = await supabase
+      .from("partnerships")
+      .upsert(payload, { onConflict: "project_id,discovered_project_id" })
+      .select();
+
+    console.log("[NYXUS] Save result:", { saved, error });
+
+    if (error) {
+      console.error("[NYXUS] Save error:", error.message, error.details, error.hint);
+      setSaving("error");
+      setTimeout(() => setSaving("idle"), 3000);
+    } else {
+      setSaving("saved");
+      setTimeout(() => { window.location.href = "/partnerships"; }, 900);
+    }
+  };
   const dp = getDP(match);
       if (!dp) return null;
   const gradient = GRADIENTS[dp.category ?? ""] ?? "from-gray-500 to-gray-600";
@@ -203,8 +240,17 @@ function DetailPanel({ match, onClose }: { match: Match; onClose: () => void }) 
 
         {/* CTA */}
         <div className="p-5 border-t border-border">
-          <button className="w-full bg-accent text-white font-semibold text-sm py-2.5 rounded-lg hover:opacity-90 transition-opacity">
-            Save to partnerships →
+          <button
+            onClick={handleSave}
+            disabled={saving !== "idle"}
+            className="w-full bg-accent text-white font-semibold text-sm py-2.5 rounded-lg hover:opacity-90 transition-all disabled:opacity-70 flex items-center justify-center gap-2"
+          >
+            {saving === "saving" && <Loader2 className="w-4 h-4 animate-spin" />}
+            {saving === "saved"  && <Check   className="w-4 h-4" />}
+            {saving === "idle"   && "Save to partnerships →"}
+            {saving === "saving" && "Saving..."}
+            {saving === "saved"  && "Saved!"}
+            {saving === "error"  && "Error — try again"}
           </button>
         </div>
       </div>
@@ -213,7 +259,7 @@ function DetailPanel({ match, onClose }: { match: Match; onClose: () => void }) 
 }
 
 // ── Main discovery client ──────────────────────────────────────
-export function DiscoveryClient({ matches, projectName }: Props) {
+export function DiscoveryClient({ matches, projectName, projectId }: Props) {
   const [search, setSearch]         = useState("");
   const [category, setCategory]     = useState("All");
   const [minScore, setMinScore]     = useState(0);
@@ -389,7 +435,7 @@ export function DiscoveryClient({ matches, projectName }: Props) {
 
       {/* Detail panel */}
       {selected && (
-        <DetailPanel match={selected} onClose={() => setSelected(null)} />
+        <DetailPanel match={selected} onClose={() => setSelected(null)} projectId={projectId} />
       )}
     </div>
   );

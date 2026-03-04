@@ -18,7 +18,11 @@ export default async function DashboardPage() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  const project = projects?.[0] ?? null;
+  // Respect the active project stored in user metadata (set by the project switcher)
+  const activeId = user.user_metadata?.active_project_id as string | undefined;
+  const project = (activeId
+    ? projects?.find((p) => p.id === activeId)
+    : null) ?? projects?.[0] ?? null;
 
   // No projects at all — show setup prompt instead of forcing redirect
   if (!project) {
