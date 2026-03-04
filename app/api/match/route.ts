@@ -246,21 +246,53 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    // 2. Fetch all discovered projects
-    const { data: discovered, error: discoveredError } = await supabase
-      .from("discovered_projects")
-      .select("id, name, category, narrative, twitter_followers, telegram_members, raw_data")
-      .limit(100);
+    // 2. Fetch ALL discovered projects in batches of 1000
+    const PAGE_SIZE = 1000;
+    let discovered: DiscoveredProject[] = [];
+    let from = 0;
 
-    if (discoveredError || !discovered || discovered.length === 0) {
+    while (true) {
+      const { data: page, error: pageError } = await supabase
+        .from("discovered_projects")
+        .select("id, name, category, narrative, twitter_followers, telegram_members, raw_data")
+        .range(from, from + PAGE_SIZE - 1);
+
+      if (pageError) {
+        return NextResponse.json({ error: "Failed to fetch projects" }, { status: 500 });
+      }
+
+      if (!page || page.length === 0) break;
+      discovered = [...discovered, ...page];
+      if (page.length < PAGE_SIZE) break; // last page
+      from += PAGE_SIZE;
+    }
+
+    if (discovered.length === 0) {
       return NextResponse.json(
         { error: "No discovered projects found. Run the scrapers first." },
         { status: 404 }
       );
     }
 
+    // Deduplicate by lowercased name — keep row with most data (followers/members)
+    const seen = new Map<string, DiscoveredProject>();
+    for (const p of discovered) {
+      const key = p.name.toLowerCase().trim();
+      const existing = seen.get(key);
+      if (!existing) {
+        seen.set(key, p);
+      } else {
+        // Keep whichever has more community data
+        const existingScore = (existing.twitter_followers || 0) + (existing.telegram_members || 0);
+        const newScore = (p.twitter_followers || 0) + (p.telegram_members || 0);
+        if (newScore > existingScore) seen.set(key, p);
+      }
+    }
+    const deduplicated = Array.from(seen.values());
+    console.log(`[NYXUS] After dedup: ${deduplicated.length} unique projects (from ${discovered.length})`);
+
     // 3. Score every candidate (synchronous — no API calls, instant)
-    const results: MatchResult[] = discovered.map((candidate) =>
+    const results: MatchResult[] = deduplicated.map((candidate) =>
       scoreMatch(project, candidate)
     );
 

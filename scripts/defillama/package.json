@@ -1,0 +1,16 @@
+{
+  "name": "nyxus-defillama-ingest",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "ingest":    "node ingest.js",
+    "dry-run":   "node ingest.js --dry-run",
+    "defi":      "node ingest.js --category dex",
+    "infra":     "node ingest.js --category bridge",
+    "big-only":  "node ingest.js --min-tvl 1000000"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "dotenv": "^16.3.1"
+  }
+}

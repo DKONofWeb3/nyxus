@@ -1,0 +1,20 @@
+{
+  "name": "nyxus-coingecko-ingest",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "ingest": "node ingest.js",
+    "dry-run": "node ingest.js --dry-run",
+    "defi": "node ingest.js --category defi",
+    "meme": "node ingest.js --category meme",
+    "ai": "node ingest.js --category ai",
+    "nft": "node ingest.js --category nft",
+    "gaming": "node ingest.js --category gaming",
+    "protocol": "node ingest.js --category protocol",
+    "infra": "node ingest.js --category infrastructure"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "dotenv": "^16.3.1"
+  }
+}
