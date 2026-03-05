@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import {
   Bell, ChevronDown, LayoutDashboard, Map, Search,
   Settings, TrendingUp, Users, Sparkles, Network,
-  Plus, Check,
+  Plus, Check, Star,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -27,20 +27,22 @@ const navItems: { section: string; items: NavItem[] }[] = [
     items: [
       { label: "Dashboard",    href: "/dashboard",    icon: LayoutDashboard },
       { label: "Discovery",    href: "/discovery",    icon: Search },
+      { label: "NYXUS AI",     href: "/ai",           icon: Sparkles },
       { label: "Partnerships", href: "/partnerships", icon: Users },
-      { label: "Alerts",       href: "/alerts",       icon: Bell },
     ],
   },
   {
-    section: "Analysis",
+    section: "Growth",
     items: [
-      { label: "Market pulse",  href: "/market",    icon: TrendingUp, teaser: true },
-      { label: "Ecosystem map", href: "/ecosystem", icon: Network,    teaser: true },
+      { label: "KOLs & Creators", href: "/kols",      icon: Star,       teaser: true },
+      { label: "Market pulse",    href: "/market",    icon: TrendingUp, teaser: true },
+      { label: "Ecosystem map",   href: "/ecosystem", icon: Network,    teaser: true },
     ],
   },
   {
     section: "Account",
     items: [
+      { label: "Alerts",   href: "/alerts",   icon: Bell },
       { label: "Settings", href: "/settings", icon: Settings },
     ],
   },
