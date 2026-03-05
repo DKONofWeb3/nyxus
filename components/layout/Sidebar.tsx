@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 import {
   Bell, ChevronDown, LayoutDashboard, Search,
   Settings, TrendingUp, Users, Sparkles, Network,
-  Plus, Check, Star, Menu, X,
+  Plus, Check, Star,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -53,13 +53,11 @@ interface SidebarProps { projects?: Project[]; activeProjectId?: string | null; 
 export function Sidebar({ projects = [], activeProjectId, alertCount = 0 }: SidebarProps) {
   const pathname = usePathname();
   const [open, setOpen]         = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [switching, setSwitching]   = useState(false);
+  const [switching, setSwitching] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
 
   const activeProject = projects.find((p) => p.id === activeProjectId) ?? projects[0] ?? null;
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (dropRef.current && !dropRef.current.contains(e.target as Node)) setOpen(false);
@@ -67,16 +65,6 @@ export function Sidebar({ projects = [], activeProjectId, alertCount = 0 }: Side
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
-
-  // Close mobile sidebar on route change
-  useEffect(() => { setMobileOpen(false); }, [pathname]);
-
-  // Prevent body scroll when mobile sidebar open
-  useEffect(() => {
-    if (mobileOpen) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
-  }, [mobileOpen]);
 
   const switchProject = async (projectId: string) => {
     if (projectId === activeProject?.id) { setOpen(false); return; }
@@ -86,15 +74,11 @@ export function Sidebar({ projects = [], activeProjectId, alertCount = 0 }: Side
     window.location.href = "/dashboard";
   };
 
-  const SidebarContent = () => (
-    <>
+  return (
+    <aside className="hidden md:flex w-[220px] flex-shrink-0 bg-bg-2 border-r border-border flex-col">
       {/* Logo */}
-      <div className="px-4 py-4 border-b border-border flex items-center justify-between">
+      <div className="px-4 py-4 border-b border-border">
         <Logo size="md" />
-        {/* Close button — mobile only */}
-        <button onClick={() => setMobileOpen(false)} className="md:hidden w-7 h-7 rounded-lg hover:bg-bg flex items-center justify-center">
-          <X className="w-4 h-4 text-text-2" />
-        </button>
       </div>
 
       {/* Project switcher */}
@@ -157,38 +141,6 @@ export function Sidebar({ projects = [], activeProjectId, alertCount = 0 }: Side
           </div>
         ))}
       </nav>
-    </>
-  );
-
-  return (
-    <>
-      {/* ── Desktop sidebar (always visible md+) ─────────── */}
-      <aside className="hidden md:flex w-[220px] flex-shrink-0 bg-bg-2 border-r border-border flex-col">
-        <SidebarContent />
-      </aside>
-
-      {/* ── Mobile: hamburger button in top-left ─────────── */}
-      <button
-        onClick={() => setMobileOpen(true)}
-        className="md:hidden fixed top-3 left-3 z-40 w-9 h-9 rounded-xl bg-surface border border-border flex items-center justify-center shadow-sm"
-      >
-        <Menu className="w-4 h-4 text-text-2" />
-      </button>
-
-      {/* ── Mobile: overlay + slide-in sidebar ───────────── */}
-      {mobileOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="md:hidden fixed inset-0 z-40 bg-text/30 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
-          />
-          {/* Slide-in sidebar */}
-          <aside className="md:hidden fixed inset-y-0 left-0 z-50 w-[260px] bg-bg-2 border-r border-border flex flex-col shadow-2xl animate-in slide-in-from-left duration-200">
-            <SidebarContent />
-          </aside>
-        </>
-      )}
-    </>
+    </aside>
   );
 }
