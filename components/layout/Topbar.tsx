@@ -25,7 +25,7 @@ export function Topbar({ title, children }: TopbarProps) {
   };
 
   return (
-    <header className="h-12 flex items-center justify-between px-6 bg-surface border-b border-border flex-shrink-0">
+    <header className="h-12 flex items-center justify-between pl-14 pr-4 md:px-6 bg-surface border-b border-border flex-shrink-0">
       <h1 className="font-syne font-bold text-base tracking-tight">{title}</h1>
 
       <div className="flex items-center gap-2">
