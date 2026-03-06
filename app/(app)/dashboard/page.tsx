@@ -90,7 +90,7 @@ export default async function DashboardPage() {
         <DiscoveryButton projectId={project.id} />
       </Topbar>
 
-      <div className="flex-1 overflow-y-auto p-6 bg-bg">
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-bg">
 
         {!hasRun && (
           <div className="card p-4 mb-6 border-accent/20 bg-accent/5 flex items-center gap-3">
@@ -106,25 +106,25 @@ export default async function DashboardPage() {
           </div>
         )}
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        {/* Stats — 2 cols on mobile, 3 on desktop */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
           <div className="card p-4">
-            <p className="text-[10px] text-text-3 font-semibold uppercase tracking-widest mb-2">Top match score</p>
+            <p className="text-[10px] text-text-3 font-semibold uppercase tracking-widest mb-2">Top match</p>
             <p className="font-syne text-3xl font-extrabold tracking-tighter mb-1">
               {topScore !== null ? `${topScore}%` : "—"}
             </p>
             <Badge variant={topScore && topScore >= 70 ? "green" : topScore ? "yellow" : "default"}>
-              {topScore && topScore >= 70 ? "↑ Strong fit" : topScore ? "Moderate fit" : "Run discovery"}
+              {topScore && topScore >= 70 ? "↑ Strong fit" : topScore ? "Moderate" : "Run scan"}
             </Badge>
           </div>
           <div className="card p-4">
-            <p className="text-[10px] text-text-3 font-semibold uppercase tracking-widest mb-2">Projects matched</p>
+            <p className="text-[10px] text-text-3 font-semibold uppercase tracking-widest mb-2">Matches</p>
             <p className="font-syne text-3xl font-extrabold tracking-tighter mb-1">{totalFound}</p>
             <Badge variant={totalFound > 0 ? "yellow" : "default"}>
-              {totalFound > 0 ? `Top ${totalFound} shown` : "Not yet run"}
+              {totalFound > 0 ? `Top ${totalFound}` : "Not yet run"}
             </Badge>
           </div>
-          <div className="card p-4">
+          <div className="card p-4 col-span-2 md:col-span-1">
             <p className="text-[10px] text-text-3 font-semibold uppercase tracking-widest mb-2">New alerts</p>
             <p className="font-syne text-3xl font-extrabold tracking-tighter mb-1">{unreadAlerts}</p>
             <Badge variant={unreadAlerts > 0 ? "red" : "default"}>
@@ -134,9 +134,10 @@ export default async function DashboardPage() {
         </div>
 
         {/* Top matches */}
-        <h2 className="font-syne text-sm font-bold mb-3 tracking-tight">
-          Top matches for {project.name}
-        </h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-syne text-sm font-bold tracking-tight">Top matches</h2>
+          <span className="text-xs text-text-3 font-medium">{project.name}</span>
+        </div>
 
         {!hasRun ? (
           <div className="card p-8 text-center mb-6">
@@ -157,7 +158,7 @@ export default async function DashboardPage() {
               const gradient = categoryGradient[dp.category ?? ""] ?? "from-gray-500 to-gray-600";
 
               return (
-                <div key={i} className="card flex items-center gap-3 p-3 hover:shadow-card-lg transition-shadow cursor-pointer">
+                <Link key={i} href="/discovery" className="card flex items-center gap-3 p-3 hover:shadow-card-lg transition-shadow cursor-pointer active:scale-[0.99]">
                   <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
                     {initials}
                   </div>
@@ -171,7 +172,7 @@ export default async function DashboardPage() {
                       <span className="text-[10px] text-text-3 bg-bg-2 px-1.5 py-px rounded">{dp.category}</span>
                     )}
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

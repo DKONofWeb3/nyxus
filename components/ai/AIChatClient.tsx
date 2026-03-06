@@ -184,11 +184,11 @@ export function AIChatClient({ project, userId, initialHistory, messagesUsed }: 
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-bg">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-bg pb-0">
 
       {/* ── Welcome screen (first visit) ─────────────────────── */}
       {isFirstVisit && (
-        <div className="flex-1 flex flex-col items-center justify-center p-6 gap-8">
+        <div className="flex-1 flex flex-col items-center justify-center p-6 pb-8 gap-8 overflow-y-auto">
           {/* Hero */}
           <div className="text-center max-w-md">
             <div className="w-14 h-14 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-4">
@@ -243,7 +243,7 @@ export function AIChatClient({ project, userId, initialHistory, messagesUsed }: 
 
       {/* ── Conversation ─────────────────────────────────────── */}
       {!isFirstVisit && (
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col gap-4">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-4 flex flex-col gap-4">
 
           {/* Quick action chips at top of conversation too */}
           <div className="flex flex-wrap gap-2 pb-2 border-b border-border">
@@ -313,7 +313,7 @@ export function AIChatClient({ project, userId, initialHistory, messagesUsed }: 
       )}
 
       {/* ── Input area ───────────────────────────────────────── */}
-      <div className="border-t border-border bg-surface p-4">
+      <div className="border-t border-border bg-surface p-4 pb-4 md:pb-4" style={{paddingBottom: "max(1rem, env(safe-area-inset-bottom))"}}>
 
         {/* Limit reached banner */}
         {limitReached && (

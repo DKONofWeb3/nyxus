@@ -178,7 +178,7 @@ export function BottomNav({ alertCount = 0, projectName }: BottomNavProps) {
       </nav>
 
       {/* Bottom padding so content doesn't hide behind nav */}
-      <div className="md:hidden h-16 flex-shrink-0" />
+      <div className="md:hidden h-20 flex-shrink-0" />
     </>
   );
 }
